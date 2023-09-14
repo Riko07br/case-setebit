@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import Home from "./pages/Home";
+import { Home } from "./pages";
 import { Login, Register } from "./pages/auth";
-import Navbar from "./components/Navbar";
+import { Navbar } from "./components";
 import { Bet } from "./pages/bets";
 import { Competitions } from "./pages/competitions";
+import axios from "axios";
 
 function App() {
+    axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+
     return (
         <Router>
             <Navbar />
