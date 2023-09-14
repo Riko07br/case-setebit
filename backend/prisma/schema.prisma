@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+
+  name String
+  email String @unique
+  hash String     //Senha
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  bets_pools_created BetsPool[]
+  bets_pools BetsPoolsOnUsers[]
+
+  @@map("users")
+}
+
+// Bolões
+model BetsPool{  
+  id Int @id @default(autoincrement())
+  name String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  creator User @relation(fields: [creator_id], references: [id])
+  creator_id Int
+  
+  users BetsPoolsOnUsers[]  // participantes do bolão
+  bets Bet[]  //palpites do bolão
+
+  @@map("bets_pools")
+}
+
+// tabela pivot (muitos pra muitos) users-bets_pools
+model BetsPoolsOnUsers {
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+
+  bets_pool BetsPool @relation(fields: [bets_pool_id], references: [id])
+  bets_pool_id Int
+
+  @@id([user_id, bets_pool_id])
+}
+
+// Palpites do bolão
+model Bet{
+  id Int @id @default(autoincrement())
+
+  home_goals Int @default(0)
+  away_goals Int @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  game Game @relation(fields: [game_id], references: [id])
+  game_id Int
+  bets_pool BetsPool @relation(fields: [bets_pool_id], references: [id])
+  bets_pool_id Int
+
+  @@map("bets")
+}
+
+// Jogos do bolão
+model Game{
+  id Int @id @default(autoincrement())
+
+  home_team_id Int
+  away_team_id Int
+  api_game_id Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  bets Bet[]
+  @@map("games")
+}
