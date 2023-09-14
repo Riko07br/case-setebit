@@ -1,23 +1,32 @@
 import React, { useEffect, useState } from "react";
-import Select, { InputActionMeta } from "react-select";
+import Select from "react-select";
 import axios from "axios";
-import { SingleValue } from "react-select/animated";
+import { MatchCard } from "../../components/";
 
 export function Competitions() {
-    const [competitions, setCompetitions] =
+    const [competitionsList, setCompetitionsList] =
         useState<Array<{ value: string; label: string }>>();
-    const [competitionSeason, setCompetitionSeason] =
-        useState<Array<{ value: string; label: string }>>();
+    const [seasonYear, setSeasonYear] = useState<number>(-1);
+    const [competition, setCompetition] = useState<number>(-1);
+    const [matches, setMatches] = useState([]);
+    const [message, setMessage] = useState<string>("");
+
+    const axiosInstance = axios.create({
+        headers: {
+            Accept: "*/*",
+            "Access-Control-Allow-Origin": "*",
+        },
+    });
 
     // Carregue as competições
     useEffect(() => {
-        axios
-            .get(import.meta.env.VITE_API_URL + "/fdo/competitions", {
-                headers: {
-                    Accept: "*/*",
-                    "Access-Control-Allow-Origin": "*",
-                },
-            })
+        setMessage("Carregando competições");
+        loadCompetitions();
+    }, []);
+
+    const loadCompetitions = () => {
+        axiosInstance
+            .get("/fdo/competitions")
             .then((response) => {
                 let competitionsSelectOptions: Array<{
                     value: string;
@@ -32,61 +41,65 @@ export function Competitions() {
                     });
                 }
 
-                setCompetitions(competitionsSelectOptions);
+                setCompetitionsList(competitionsSelectOptions);
+                setMessage("-");
             })
             .catch((error) => {
+                setMessage("Não foi possível carregar as informações");
                 console.error(error);
             });
-    }, []);
+    };
 
-    const onCompetitionSelect = (e: any) => {
-        console.log(e.value);
-        axios
+    const loadMatches = () => {
+        axiosInstance
             .get(
-                import.meta.env.VITE_API_URL + "/fdo/competitions/" + e.value,
-                {
-                    headers: {
-                        Accept: "*/*",
-                        "Access-Control-Allow-Origin": "*",
-                    },
-                }
+                "/fdo/matches?competition=" +
+                    competition +
+                    "&year=" +
+                    seasonYear
             )
             .then((response) => {
-                let competitionsSelectOptions: Array<{
-                    value: string;
-                    label: string;
-                }> = [];
-
-                for (let i = 0; i < response.data.length; i++) {
-                    const c = response.data[i];
-                    competitionsSelectOptions.push({
-                        value: c.id,
-                        label: "Temp. " + c.startDate + " " + c.endDate,
-                    });
-                }
-
-                setCompetitionSeason(competitionsSelectOptions);
+                setMatches(response.data);
             })
             .catch((error) => {
+                setMessage("Não foi possível carregar as informações");
                 console.error(error);
             });
+    };
+
+    const onCompetitionSelect = (e: any) => {
+        if (!isNaN(e.value)) {
+            setCompetition(e.value as number);
+            if (seasonYear > -1) loadMatches();
+        }
+    };
+
+    const onYearSubmit = (e: any) => {
+        if (e.key === "Enter" && !isNaN(e.target.value)) {
+            setSeasonYear(e.target.value as number);
+            if (competition > -1) loadMatches();
+        }
     };
 
     return (
         <>
             <h1>Campeonatos</h1>
-            {competitions != undefined && competitions.length > 0 ? (
+            <p>{message}</p>
+            {competitionsList != undefined && competitionsList.length > 0 ? (
                 <Select
                     name="competitions"
-                    options={competitions}
+                    options={competitionsList}
                     onChange={onCompetitionSelect}
                 />
             ) : (
-                <p>Carregando competições</p>
+                <></>
             )}
 
-            {competitionSeason != undefined && competitionSeason.length > 0 ? (
-                <Select name="seasons" options={competitionSeason} />
+            <label htmlFor="year">Insira o ano do Campeonato</label>
+            <input type="text" name="year" onKeyDown={onYearSubmit} />
+
+            {matches?.length > 0 ? (
+                matches.map((m) => <MatchCard match={m} />)
             ) : (
                 <></>
             )}
