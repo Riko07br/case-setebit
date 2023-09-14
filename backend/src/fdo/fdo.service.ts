@@ -37,21 +37,25 @@ export class FdoService {
         });
     }
 
-    async getCompetitionSeasons(id: number) {
-        console.log(id);
+    async getMatches(competitionId: number, year: number) {
         return new Promise((resolve, reject) => {
             firstValueFrom(
                 this.httpService.get(
-                    process.env.FDO_API_URL + "/competitions/" + id,
+                    process.env.FDO_API_URL +
+                        "/competitions/" +
+                        competitionId +
+                        "/matches?season=" +
+                        year,
                     {
                         headers: {
                             "X-Auth-Token": process.env.FDO_API_TOK,
+                            "X-Unfold-Goals": true,
                         },
                     }
                 )
             )
                 .then((response) => {
-                    resolve(response.data.seasons);
+                    resolve(response.data.matches);
                 })
                 .catch((error) => {
                     console.log(error.message);
@@ -65,10 +69,6 @@ const testData = [
     {
         id: 2013,
         name: "Campeonato Brasileiro Série A",
-    },
-    {
-        id: 2016,
-        name: "Championship",
     },
     {
         id: 2021,
@@ -93,25 +93,5 @@ const testData = [
     {
         id: 2019,
         name: "Serie A",
-    },
-    {
-        id: 2003,
-        name: "Eredivisie",
-    },
-    {
-        id: 2017,
-        name: "Primeira Liga",
-    },
-    {
-        id: 2152,
-        name: "Copa Libertadores",
-    },
-    {
-        id: 2014,
-        name: "Primera Division",
-    },
-    {
-        id: 2000,
-        name: "FIFA World Cup",
     },
 ];

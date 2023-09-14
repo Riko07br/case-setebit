@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, Query } from "@nestjs/common";
 import { FdoService } from "./fdo.service";
 
 @Controller("fdo")
@@ -10,8 +10,14 @@ export class FdoController {
         return await this.fdoService.getCompetitions();
     }
 
-    @Get("competitions/:id")
-    async getCompetitionSeasons(@Param("id") id: number) {
-        return await this.fdoService.getCompetitionSeasons(id);
+    @Get("matches?")
+    async getMatches(
+        @Query("competition") competitionId: number,
+        @Query("year") year: number
+    ) {
+        //Pega o ano atual como default
+        if (year == undefined) year = new Date().getFullYear();
+
+        return await this.fdoService.getMatches(competitionId, year);
     }
 }
