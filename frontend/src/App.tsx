@@ -8,7 +8,10 @@ import { Competitions } from "./pages/competitions";
 import axios from "axios";
 
 function App() {
+    let [authenticated, setAuthenticated] = useState<boolean>(false);
+
     axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+    axios.defaults.withCredentials = true;
 
     return (
         <Router>

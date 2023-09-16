@@ -14,7 +14,6 @@ export function Competitions() {
     const axiosInstance = axios.create({
         headers: {
             Accept: "*/*",
-            "Access-Control-Allow-Origin": "*",
         },
     });
 
