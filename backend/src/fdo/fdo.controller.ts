@@ -16,7 +16,8 @@ export class FdoController {
         @Query("year") year: number
     ) {
         //Pega o ano atual como default
-        if (year == undefined) year = new Date().getFullYear();
+        console.log("control year:" + year);
+        if (year == undefined || year < 0) year = new Date().getFullYear();
 
         return await this.fdoService.getMatches(competitionId, year);
     }

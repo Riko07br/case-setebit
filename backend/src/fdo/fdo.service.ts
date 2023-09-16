@@ -11,11 +11,14 @@ export class FdoService {
         return new Promise((resolve, reject) => {
             //resolve(testData);
             firstValueFrom(
-                this.httpService.get(process.env.FDO_API_URL + "competitions", {
-                    headers: {
-                        "X-Auth-Token": process.env.FDO_API_TOK,
-                    },
-                })
+                this.httpService.get(
+                    process.env.FDO_API_URL + "/competitions",
+                    {
+                        headers: {
+                            "X-Auth-Token": process.env.FDO_API_TOK,
+                        },
+                    }
+                )
             )
                 .then((response) => {
                     const data = response.data
