@@ -62,10 +62,13 @@ export class AuthService {
         res.send({ message: "Authentication Successful." });
     }
 
-    signOut(@Res({ passthrough: true }) res) {
-        // Some internal checks
-
-        res.cookie("token", "", { expires: new Date() });
+    signOut(@Req() req, @Res({ passthrough: false }) res) {
+        if (req.cookies && "access_token" in req.cookies) {
+            res.cookie("access_token", "", { expires: new Date() });
+            res.send({ message: "Logout Successful." });
+        } else {
+            res.send({ message: "Logout not needed." });
+        }
     }
 
     async signStatus(@Req() req) {
