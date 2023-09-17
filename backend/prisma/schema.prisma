@@ -40,6 +40,7 @@ model BetsPool{
   
   users BetsPoolsOnUsers[]  // participantes do bolão
   bets Bet[]  //palpites do bolão
+  games Game[]
 
   @@map("bets_pools")
 }
@@ -80,11 +81,16 @@ model Game{
   id Int @id @default(autoincrement())
 
   home_team_id Int
+  home_team_name String
   away_team_id Int
+  away_team_name String
   api_game_id Int
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  betsPool BetsPool @relation(fields: [betsPool_id], references: [id])
+  betsPool_id Int
 
   bets Bet[]
   @@map("games")
