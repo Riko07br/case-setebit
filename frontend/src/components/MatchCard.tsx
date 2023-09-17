@@ -1,23 +1,30 @@
 import React from "react";
 
-// Cria cards com o conteudo de uma partida resumido
-export const MatchCard = ({
-    match: { id, utcDate, homeTeam, awayTeam, score },
-}) => {
-    console.log(id);
+interface Prop {
+    match: {
+        id?: number;
+        utcDate?: string;
+        homeTeam?: any;
+        awayTeam?: any;
+        score?: any;
+    };
+}
 
-    const homeGoals: number = score.fullTime.home;
-    const awayGoals: number = score.fullTime.away;
+// Cria cards com o conteudo de uma partida resumido
+export const MatchCard: React.FC<Prop> = (prop) => {
+    const match = prop.match;
+    const homeGoals: number = match.score.fullTime.home;
+    const awayGoals: number = match.score.fullTime.away;
 
     return (
         <ul>
             <hr />
-            <li>{utcDate}</li>
+            <li>{match.utcDate}</li>
             <li>
-                {homeGoals} - {homeTeam.name}
+                {homeGoals} - {match.homeTeam.name}
             </li>
             <li>
-                {awayGoals} - {awayTeam.name}
+                {awayGoals} - {match.awayTeam.name}
             </li>
         </ul>
     );
