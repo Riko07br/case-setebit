@@ -11,12 +11,6 @@ export function Competitions() {
     const [matches, setMatches] = useState([]);
     const [message, setMessage] = useState<string>("");
 
-    const axiosInstance = axios.create({
-        headers: {
-            Accept: "*/*",
-        },
-    });
-
     // Carregue as competições
     useEffect(() => {
         setMessage("Carregando competições");
@@ -24,7 +18,7 @@ export function Competitions() {
     }, []);
 
     const loadCompetitions = () => {
-        axiosInstance
+        axios
             .get("/fdo/competitions")
             .then((response) => {
                 let competitionsSelectOptions: Array<{
@@ -50,7 +44,7 @@ export function Competitions() {
     };
 
     const loadMatches = () => {
-        axiosInstance
+        axios
             .get(
                 "/fdo/matches?competition=" +
                     competition +
