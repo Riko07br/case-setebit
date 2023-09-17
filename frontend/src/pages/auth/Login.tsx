@@ -1,13 +1,9 @@
 import axios from "axios";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function Login() {
-    const axiosInstance = axios.create({
-        headers: {
-            Accept: "*/*",
-        },
-    });
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -19,10 +15,12 @@ export function Login() {
             (value, property: string) => (responseBody[property] = value)
         );
 
-        axiosInstance
+        axios
             .post("/auth/signin", responseBody)
             .then((response) => {
-                console.log(response.data);
+                console.log("login:" + response.data);
+                navigate("/");
+                navigate(0);
             })
             .catch((error) => {
                 console.error(error);
