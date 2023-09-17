@@ -22,6 +22,7 @@ model User {
 
   bets_pools_created BetsPool[]
   bets_pools BetsPoolsOnUsers[]
+  bets Bet[]
 
   @@map("users")
 }
@@ -68,6 +69,8 @@ model Bet{
   game_id Int
   bets_pool BetsPool @relation(fields: [bets_pool_id], references: [id])
   bets_pool_id Int
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
 
   @@map("bets")
 }
