@@ -39,26 +39,29 @@ export class BetsPoolsService {
     }
 
     async findAll(userId: number) {
-        const pivot = await this.prisma.betsPoolsOnUsers.findMany({
-            where: {
-                user_id: userId,
-            },
+        const betsPools = await this.prisma.betsPool.findMany({
             include: {
-                bets_pool: true,
+                users: { where: { user_id: userId }, include: { user: true } },
+                games: true,
+                bets: { include: { game: true } },
             },
-        });
-
-        let betsPools: Array<any> = [];
-
-        pivot.forEach((e) => {
-            betsPools.push(e.bets_pool);
         });
 
         return betsPools;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} betsPool`;
+    async findOne(id: number) {
+        const betsPool = await this.prisma.betsPool.findUnique({
+            where: {
+                id: id,
+            },
+            include: {
+                games: true,
+                bets: true,
+            },
+        });
+
+        return betsPool;
     }
 
     update(id: number, updateBetsPoolDto: UpdateBetsPoolDto) {
