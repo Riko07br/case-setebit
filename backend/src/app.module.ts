@@ -7,6 +7,9 @@ import { UsersModule } from "./users/users.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./auth/auth.module";
 import { JwtModule } from "@nestjs/jwt";
+import { BetsModule } from "./bets/bets.module";
+import { BetsPoolsModule } from "./bets-pools/bets-pools.module";
+import { GamesModule } from './games/games.module';
 
 @Module({
     imports: [
@@ -16,6 +19,9 @@ import { JwtModule } from "@nestjs/jwt";
         PrismaModule,
         AuthModule,
         JwtModule,
+        BetsModule,
+        BetsPoolsModule,
+        GamesModule,
     ],
     controllers: [AppController],
     providers: [AppService],
