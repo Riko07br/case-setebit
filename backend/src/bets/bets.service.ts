@@ -7,16 +7,50 @@ import { PrismaService } from "../prisma/prisma.service";
 export class BetsService {
     constructor(private prisma: PrismaService) {}
 
-    create(createBetDto: CreateBetDto) {
-        return "This action adds a new bet";
+    async create(createBetDto: CreateBetDto, userId: number) {
+        console.log("home " + createBetDto.home_goals);
+        console.log("away " + createBetDto.away_goals);
+        const bet = await this.prisma.bet.create({
+            data: {
+                bets_pool_id: createBetDto.betsPoolId,
+                game_id: createBetDto.gameId,
+                home_goals: createBetDto.home_goals,
+                away_goals: createBetDto.away_goals,
+                user_id: userId,
+            },
+            include: {
+                game: true,
+            },
+        });
+
+        return bet;
     }
 
-    findAll() {
-        return `This action returns all bets`;
+    async findAll(bets_pool_id: number, userId: number) {
+        const bets = await this.prisma.bet.findMany({
+            where: {
+                bets_pool_id: bets_pool_id,
+                user_id: userId,
+            },
+            include: {
+                game: true,
+            },
+        });
+
+        return bets;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} bet`;
+    async findOne(id: number) {
+        const bet = await this.prisma.bet.findUnique({
+            where: {
+                id,
+            },
+            include: {
+                game: true,
+            },
+        });
+
+        return bet;
     }
 
     update(id: number, updateBetDto: UpdateBetDto) {
