@@ -7,6 +7,7 @@ import {
     Param,
     Delete,
     UseGuards,
+    Query,
 } from "@nestjs/common";
 import { GamesService } from "./games.service";
 import { CreateGameDto } from "./dto/create-game.dto";
@@ -19,13 +20,21 @@ export class GamesController {
     constructor(private readonly gamesService: GamesService) {}
 
     @Post()
-    create(@Body() createGameDto: CreateGameDto) {
-        return this.gamesService.create(createGameDto);
+    async create(@Body() createGameDto: CreateGameDto) {
+        return await this.gamesService.create(createGameDto);
     }
 
     @Get()
     findAll() {
         return this.gamesService.findAll();
+    }
+
+    @Get("validate?")
+    isInBetPool(
+        @Query("api-game-id") apiGameId: string,
+        @Query("bets-pool-id") betsPoolId: string
+    ) {
+        return this.gamesService.isInBetPool(+apiGameId, +betsPoolId);
     }
 
     @Get(":id")

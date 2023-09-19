@@ -8,15 +8,15 @@ export class GamesService {
     constructor(private prisma: PrismaService) {}
 
     async create(createGameDto: CreateGameDto) {
+        console.log(createGameDto);
         const game = await this.prisma.game.create({
             data: {
+                betsPool_id: createGameDto.betsPoolId,
                 home_team_id: createGameDto.homeTeamId,
                 home_team_name: createGameDto.homeTeamName,
                 away_team_id: createGameDto.awayTeamId,
                 away_team_name: createGameDto.awayTeamName,
                 api_game_id: createGameDto.apiGameId,
-                betsPool: { connect: { id: createGameDto.betsPoolId } },
-                ...createGameDto,
             },
         });
 
@@ -37,5 +37,16 @@ export class GamesService {
 
     remove(id: number) {
         return `This action removes a #${id} game`;
+    }
+
+    async isInBetPool(apiGameId: number, betsPoolId: number) {
+        const game = await this.prisma.game.findFirst({
+            where: {
+                betsPool_id: betsPoolId,
+                api_game_id: apiGameId,
+            },
+        });
+
+        return game != undefined ? true : false;
     }
 }
