@@ -16,10 +16,9 @@ export function Competitions() {
     const [auth, setAuth] = useState<boolean>(false);
     const [betsPool, setBetsPool] = useState<number>();
 
-    // Carregue as competições
+    // Init
     useEffect(() => {
         setMessage("Carregando competições");
-
         axios
             .get("/auth/status")
             .then((response) => {
@@ -33,6 +32,12 @@ export function Competitions() {
         loadCompetitions();
     }, []);
 
+    // Load matches when variables are in place
+    useEffect(() => {
+        if (competition > 0 && seasonYear > 0) loadMatches();
+    }, [competition, seasonYear]);
+
+    // Load=============================================
     const loadCompetitions = () => {
         axios
             .get("/fdo/competitions")
@@ -101,18 +106,18 @@ export function Competitions() {
             });
     };
 
-    // on Events----------------------------------------
+    // on Events========================================
     const onCompetitionSelect = (e: any) => {
         if (!isNaN(e.value)) {
             setCompetition(e.value as number);
-            if (seasonYear > -1) loadMatches();
+            //if (seasonYear > -1) loadMatches();
         }
     };
 
     const onYearSubmit = (e: any) => {
         if (e.key === "Enter" && !isNaN(e.target.value)) {
             setSeasonYear(e.target.value as number);
-            if (competition > -1) loadMatches();
+            //if (competition > -1) loadMatches();
         }
     };
 
