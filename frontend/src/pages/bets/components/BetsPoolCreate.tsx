@@ -1,25 +1,27 @@
 import axios from "axios";
-import React from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
+
+interface Prop {
+    onNewBetsPool: Dispatch<SetStateAction<any>>;
+}
 
 // Form to create a bets pool
-export const BetsPoolCreate = () => {
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+export const BetsPoolCreate: React.FC<Prop> = (prop) => {
+    const [name, setName] = useState<string>("");
+
+    const handleSubmit = (e: any) => {
         e.preventDefault();
 
-        const formData = new FormData(e.currentTarget as HTMLFormElement);
-        let responseBody: { [key: string]: FormDataEntryValue } = {};
+        if (name == "") return;
 
-        formData.forEach(
-            (value, property: string) => (responseBody[property] = value)
-        );
+        const responseBody = { name };
 
         axios
             .post("/bets-pools", responseBody)
             .then((response) => {
                 console.log(response.data);
-                //navigate to bets pool
-                //navigate("/");
-                //navigate(0);
+                prop.onNewBetsPool(response.data);
+                setName("");
             })
             .catch((error) => {
                 console.error(error);
@@ -27,17 +29,18 @@ export const BetsPoolCreate = () => {
     };
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="name">Nome do bolão</label>
-                    <input type="text" name="name" id="name" />
-                </div>
-                <div>
-                    <p>Adicionar jogos</p>
-                </div>
-                <button type="submit">Criar bolão</button>
-            </form>
-        </>
+        <form onSubmit={handleSubmit}>
+            <h3>Criar novo bolão</h3>
+            <div>
+                <label htmlFor="name">Nome do bolão</label>
+                <input
+                    type="text"
+                    name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+            </div>
+            <button type="submit">Criar bolão</button>
+        </form>
     );
 };
