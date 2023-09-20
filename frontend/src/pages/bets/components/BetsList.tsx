@@ -1,22 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface Prop {
     bets: Array<any>;
+    results?: Array<any>;
+}
+
+interface BetResult {
+    bet: any;
+    result?: any;
 }
 
 // Show all bets for the bet pool
 export const BetsList: React.FC<Prop> = (prop) => {
+    const [betsResults, setBetsResults] = useState<Array<BetResult>>([]);
+
+    const handleResultBet = () => {
+        let betResultsTmp: Array<BetResult> = [];
+
+        prop.bets.forEach((bet) => {
+            const result = prop.results?.find(
+                (i) => i.id === bet.game.api_game_id
+            );
+            betResultsTmp.push({ bet, result });
+        });
+
+        setBetsResults(betResultsTmp);
+    };
+
+    useEffect(() => {
+        handleResultBet();
+    }, []);
+
     return (
         <div>
-            {prop.bets?.length > 0 ? (
-                prop.bets.map((bet) => (
-                    <div key={bet.id}>
-                        <p>dia e horario</p>
+            {betsResults?.length > 0 ? (
+                betsResults.map((betResult) => (
+                    <div key={betResult.bet.id}>
                         <p>
-                            {bet.game.home_team_name}: {bet.home_goals}
+                            <b>Times: </b>
+                            {betResult.bet.game.home_team_name +
+                                " x " +
+                                betResult.bet.game.away_team_name}
                         </p>
                         <p>
-                            {bet.game.away_team_name}: {bet.home_goals}
+                            <b>Aposta: </b>
+                            {betResult.bet.home_goals +
+                                " x " +
+                                betResult.bet.home_goals}
+                        </p>
+                        <p>
+                            <b>Resultado: </b>
+                            {betResult.result != undefined
+                                ? betResult.result.score.fullTime.home +
+                                  " x " +
+                                  betResult.result.score.fullTime.away
+                                : "Sem resultado até o momento"}
                         </p>
                         <hr />
                     </div>
