@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BetsList, GameCard } from ".";
+import axios from "axios";
 
 interface Prop {
     betsPool: {
@@ -12,7 +13,9 @@ interface Prop {
 
 // Show bets pools where the user is betting or has created
 export const BetsPoolCard: React.FC<Prop> = (prop) => {
+    const loadedResultsRef = useRef<boolean>(false);
     const [bets, setBets] = useState<Array<any>>([]);
+    const [results, setResults] = useState<Array<any>>();
 
     const handleNewBet = (bet: any) => {
         console.log(bet);
@@ -20,13 +23,31 @@ export const BetsPoolCard: React.FC<Prop> = (prop) => {
         setBets((oldBets) => [...oldBets, bet]);
     };
 
+    const loadBetsResults = async () => {
+        await axios
+            .get("/fdo/results/" + prop.betsPool.id)
+            .then((response) => {
+                loadedResultsRef.current = true;
+                setResults(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     useEffect(() => {
-        setBets(prop.betsPool.bets);
+        loadBetsResults();
     }, []);
+
+    useEffect(() => {
+        if (loadedResultsRef.current) {
+            setBets(prop.betsPool.bets);
+        }
+    }, [results]);
 
     return (
         <>
-            <p>Bolão: {prop.betsPool.name}</p>
+            <h2> ==Bolão: {prop.betsPool.name}== </h2>
             <div>
                 <h3>Jogos:</h3>
                 {prop.betsPool.games?.length > 0 ? (
@@ -45,7 +66,11 @@ export const BetsPoolCard: React.FC<Prop> = (prop) => {
             <div key={"Bets"}>
                 <h3>Apostas:</h3>
                 {bets.length > 0 ? (
-                    <BetsList key={prop.betsPool.id} bets={bets} />
+                    <BetsList
+                        key={prop.betsPool.id}
+                        bets={bets}
+                        results={results}
+                    />
                 ) : (
                     <>Apostas ainda não realizadas</>
                 )}

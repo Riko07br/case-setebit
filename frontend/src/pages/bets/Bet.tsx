@@ -9,6 +9,10 @@ export function Bet() {
         loadBetsPools();
     }, []);
 
+    const handleNewBetsPool = (pool: any) => {
+        setBetPools((oldPools) => [...oldPools, pool]);
+    };
+
     const loadBetsPools = () => {
         axios
             .get("/bets-pools")
@@ -24,7 +28,7 @@ export function Bet() {
         <>
             <h1>Bolões</h1>
             <div>
-                <BetsPoolCreate />
+                <BetsPoolCreate onNewBetsPool={handleNewBetsPool} />
                 <hr />
                 {betsPools?.length > 0 ? (
                     betsPools.map((b) => (
