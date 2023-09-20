@@ -9,8 +9,6 @@ interface Prop {
 
 // Bets Pool game
 export const GameCard: React.FC<Prop> = (prop) => {
-    //export class GameCard extends React.Component<Prop,Change> {
-
     const [betOpen, setBetOpen] = useState(false);
     const [homeGoals, setHomeGoals] = useState<number>(0);
     const [awayGoals, setAwayGoals] = useState<number>(0);
@@ -41,57 +39,49 @@ export const GameCard: React.FC<Prop> = (prop) => {
     }
 
     return (
-        <>
+        <div>
+            <p>dia e horario</p>
+            {prop.game.home_team_name} x {prop.game.away_team_name}
             <div>
-                <p>dia e horario</p>
-                {prop.game.home_team_name} x {prop.game.away_team_name}
-                <div>
-                    {betOpen ? (
-                        <>
-                            <button
-                                type="button"
-                                onClick={() => setBetOpen(false)}>
-                                X
-                            </button>
-                            <form onSubmit={handleSubmit}>
-                                <input
-                                    type="number"
-                                    name="home_goals"
-                                    value={homeGoals}
-                                    onChange={(e) => {
-                                        if (validateInput(e.target.value))
-                                            setHomeGoals(
-                                                Number(e.target.value)
-                                            );
-                                        else if (e.target.value == undefined)
-                                            setHomeGoals(0);
-                                    }}
-                                />
-                                x
-                                <input
-                                    type="number"
-                                    name="away_goals"
-                                    value={awayGoals}
-                                    onChange={(e) => {
-                                        if (validateInput(e.target.value))
-                                            setAwayGoals(
-                                                Number(e.target.value)
-                                            );
-                                        else if (e.target.value == undefined)
-                                            setAwayGoals(0);
-                                    }}
-                                />
-                                <button type="submit">Confirmar aposta!</button>
-                            </form>
-                        </>
-                    ) : (
-                        <button type="button" onClick={() => setBetOpen(true)}>
-                            Apostar
+                {betOpen ? (
+                    <>
+                        <button type="button" onClick={() => setBetOpen(false)}>
+                            X
                         </button>
-                    )}
-                </div>
+                        <form onSubmit={handleSubmit}>
+                            <input
+                                type="number"
+                                name="home_goals"
+                                value={homeGoals}
+                                onChange={(e) => {
+                                    if (validateInput(e.target.value))
+                                        setHomeGoals(Number(e.target.value));
+                                    else if (e.target.value == undefined)
+                                        setHomeGoals(0);
+                                }}
+                            />
+                            x
+                            <input
+                                type="number"
+                                name="away_goals"
+                                value={awayGoals}
+                                onChange={(e) => {
+                                    if (validateInput(e.target.value))
+                                        setAwayGoals(Number(e.target.value));
+                                    else if (e.target.value == undefined)
+                                        setAwayGoals(0);
+                                }}
+                            />
+                            <button type="submit">Confirmar aposta!</button>
+                        </form>
+                    </>
+                ) : (
+                    <button type="button" onClick={() => setBetOpen(true)}>
+                        Apostar
+                    </button>
+                )}
             </div>
             <hr />
-        </>
+        </div>
     );
 };
