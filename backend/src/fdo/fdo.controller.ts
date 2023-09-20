@@ -21,4 +21,9 @@ export class FdoController {
 
         return await this.fdoService.getMatches(competitionId, year);
     }
+
+    @Get("results/:id")
+    async getMatchesInBetsPool(@Param("id") betsPoolId: string) {
+        return await this.fdoService.getMatchesInBetsPool(+betsPoolId);
+    }
 }

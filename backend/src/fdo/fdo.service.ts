@@ -2,10 +2,14 @@ import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
 import { firstValueFrom } from "rxjs";
 import { CompetitionDto } from "./dto/competition.dto";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class FdoService {
-    constructor(private readonly httpService: HttpService) {}
+    constructor(
+        private readonly httpService: HttpService,
+        private prisma: PrismaService
+    ) {}
 
     async getCompetitions() {
         return new Promise((resolve, reject) => {
@@ -66,35 +70,37 @@ export class FdoService {
                 });
         });
     }
-}
 
-const testData = [
-    {
-        id: 2013,
-        name: "Campeonato Brasileiro Série A",
-    },
-    {
-        id: 2021,
-        name: "Premier League",
-    },
-    {
-        id: 2001,
-        name: "UEFA Champions League",
-    },
-    {
-        id: 2018,
-        name: "European Championship",
-    },
-    {
-        id: 2015,
-        name: "Ligue 1",
-    },
-    {
-        id: 2002,
-        name: "Bundesliga",
-    },
-    {
-        id: 2019,
-        name: "Serie A",
-    },
-];
+    async getMatchesInBetsPool(betsPoolId: number) {
+        let url = process.env.FDO_API_URL + "/matches/?ids=";
+
+        const betsPool = await this.prisma.betsPool.findUnique({
+            where: { id: betsPoolId },
+            include: { games: true },
+        });
+
+        for (let i = 0; i < betsPool.games.length; i++) {
+            const id = betsPool.games[i].api_game_id;
+            url += id;
+            if (i < id - 1) url += ",";
+        }
+
+        console.log(url);
+        return new Promise((resolve, reject) => {
+            firstValueFrom(
+                this.httpService.get(url, {
+                    headers: {
+                        "X-Auth-Token": process.env.FDO_API_TOK,
+                    },
+                })
+            )
+                .then((response) => {
+                    resolve(response.data.matches);
+                })
+                .catch((error) => {
+                    console.log(error.message);
+                    reject(error);
+                });
+        });
+    }
+}
